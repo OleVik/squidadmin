@@ -23,6 +23,7 @@ class SquidAdminPlugin extends Plugin
     public static function getSubscribedEvents()
     {
         return [
+            'onAdminTwigTemplatePaths' => ['onAdminTwigTemplatePaths', 0],
             'onPluginsInitialized' => ['onPluginsInitialized', 0]
         ];
     }
@@ -32,25 +33,11 @@ class SquidAdminPlugin extends Plugin
      */
     public function onPluginsInitialized() {
         if ($this->isAdmin()) {
-            $this->initializeAdmin();
+            $this->grav['debugger']->addMessage('Squid still tastes like rubber, but we\'re in admin with less overhead.');
         }
     }
 
-    public function initializeAdmin() {
-        $uri = $this->grav['uri'];
-        $this->enable([
-            'onTwigTemplatePaths' => ['onTwigAdminTemplatePaths', 0]
-        ]);
-    }
-
-    public function onTwigAdminTemplatePaths() {
-        $pluginsobject = (array) $this->config->get('plugins');
-        if (isset($pluginsobject['squidadmin'])) {
-            if ($pluginsobject['squidadmin']['enabled']) {
-                $this->grav['twig']->twig_paths[] = __DIR__ . '/admin/templates';
-                $this->grav['debugger']->addMessage('Squid taste rubber 2');
-                dump ($this->grav['twig']->twig_paths);
-            }
-        }
-    }
+	public function onAdminTwigTemplatePaths($event) {
+		$event['paths'] = [__DIR__ . '/admin/templates'];
+	}
 }
